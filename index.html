@@ -1,4 +1,3 @@
-<!-- login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,7 +95,7 @@
 <body>
   <div class="container">
     <h1 class="website-name">Calmx</h1>
-    <form id="loginForm" action="dashboard.html" method="POST" class="login-form" onsubmit="return validateForm()">
+    <form id="loginForm" class="login-form" onsubmit="return handleLogin(event)">
       <div class="input-group">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" placeholder="Enter your email" required>
@@ -114,14 +113,16 @@
   </div>
 
   <script>
-    function validateForm() {
+    function handleLogin(event) {
+      event.preventDefault(); // Prevent form from submitting traditionally
+
       var email = document.getElementById("email").value;
       var password = document.getElementById("password").value;
 
       // Check if email or password is empty
       if (email === "" || password === "") {
         alert("Both fields are required!");
-        return false; // Prevent form submission
+        return false; // Stop submission
       }
 
       // Basic email format validation
@@ -131,7 +132,9 @@
         return false;
       }
 
-      return true; // Allow form submission if all checks pass
+      // Redirect to home.html after validation
+      window.location.href = "home.html";
+      return true;
     }
   </script>
 </body>
