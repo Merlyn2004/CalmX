@@ -1,87 +1,52 @@
-from flask import Flask, render_template, request, jsonify
-import mysql.connector
+from flask import Flask, jsonify, request, render_template
+from flask_cors import CORS  # To enable CORS if you are using a separate front-end
 
+app = Flask(__name__,template_folder='CALMX')
+CORS(app)
 
-app = Flask(__name__)
+# In-memory storage for tasks (you can replace this with a database in production)
+tasks = []
 
-# Initialize SQLite Database
-def init_db():
-    conn = sqlite3.connect('database/calmexam.db')
-    cursor = conn.cursor()
-
-    # Table for Study Planner
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS study_planner (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            subject TEXT NOT NULL,
-            hours INTEGER NOT NULL
-        )
-    ''')
-
-    # Table for Community Comments
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS comments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            comment TEXT NOT NULL
-        )
-    ''')
-    conn.commit()
-    conn.close()
-
-# Route: Home Page
+# Route to serve the main page
 @app.route('/')
-def home():
-    return render_template('index.html')
+def index():
+    return render_template('index.html')  # Your front-end HTML file
 
-# Route: Add Study Task
-@app.route('/add_task', methods=['POST'])
-def add_task():
-    subject = request.form['subject']
-    hours = request.form['hours']
-
-    conn = sqlite3.connect('database/calmexam.db')
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO study_planner (subject, hours) VALUES (?, ?)', (subject, hours))
-    conn.commit()
-    conn.close()
-
-    return jsonify({"message": "Task added successfully!"})
-
-# Route: Get Study Tasks
-@app.route('/get_tasks', methods=['GET'])
+# Route to get all tasks
+@app.route('/tasks', methods=['GET'])
 def get_tasks():
-    conn = sqlite3.connect('database/calmexam.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT subject, hours FROM study_planner')
-    tasks = cursor.fetchall()
-    conn.close()
-
     return jsonify(tasks)
 
-# Route: Add Comment
-@app.route('/add_comment', methods=['POST'])
-def add_comment():
-    comment = request.form['comment']
+# Route to add a task
+@app.route('/tasks', methods=['POST'])
+def add_task():
+    data = request.get_json()
+    task = data.get('task')
+    
+    if task:
+        tasks.append({'task': task})
+        return jsonify({'message': 'Task added successfully!'}), 201
+    else:
+        return jsonify({'error': 'No task provided!'}), 400
 
-    conn = sqlite3.connect('database/calmexam.db')
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO comments (comment) VALUES (?)', (comment,))
-    conn.commit()
-    conn.close()
+# Route to delete a task
+@app.route('/tasks/<int:task_id>', methods=['DELETE'])
+def delete_task(task_id):
+    if 0 <= task_id < len(tasks):
+        tasks.pop(task_id)
+        return jsonify({'message': 'Task deleted successfully!'})
+    else:
+        return jsonify({'error': 'Task not found!'}), 404
 
-    return jsonify({"message": "Comment added successfully!"})
-
-# Route: Get Comments
-@app.route('/get_comments', methods=['GET'])
-def get_comments():
-    conn = sqlite3.connect('database/calmexam.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT comment FROM comments')
-    comments = cursor.fetchall()
-    conn.close()
-
-    return jsonify(comments)
+# Route to update Pomodoro timer settings (optional, can be expanded)
+@app.route('/pomodoro', methods=['POST'])
+def set_pomodoro():
+    data = request.get_json()
+    study_time = data.get('study_time', 25)  # default 25 minutes
+    break_time = data.get('break_time', 5)   # default 5 minutes
+    
+    # Ideally, you can save these settings to a database for each user
+    return jsonify({'study_time': study_time, 'break_time': break_time})
 
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True)
