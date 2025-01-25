@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reminders - CalmX</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to bottom right, #eef2f3, #dce9f8);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="w-full bg-indigo-600 text-white py-4 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">CalmX</h1>
+            <nav>
+                <ul class="flex space-x-4">
+                    <li><a href="index.html" class="hover:text-indigo-300">Home</a></li>
+                    <li><a href="study-plan.html" class="hover:text-indigo-300">Study Plans</a></li>
+                    <li><a href="#" class="hover:text-indigo-300">Quizzes</a></li>
+                    <li><a href="#" class="hover:text-indigo-300">Progress</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="w-full flex-grow">
+        <section class="max-w-7xl mx-auto px-4 py-8">
+            <!-- Page Title -->
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-extrabold text-indigo-600">Set Your Reminders</h2>
+                <p class="mt-4 text-gray-700 text-lg">Never miss a study session or important exam date! Add and manage your reminders below.</p>
+            </div>
+
+            <!-- Reminder Form -->
+            <div class="bg-white shadow-md rounded-2xl p-6 max-w-4xl mx-auto">
+                <form id="reminder-form" class="space-y-6">
+                    <div>
+                        <label for="reminder-title" class="block text-sm font-medium text-gray-700">Reminder Title</label>
+                        <input type="text" id="reminder-title" name="reminder-title" placeholder="e.g., Chemistry Revision" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <div>
+                        <label for="reminder-date" class="block text-sm font-medium text-gray-700">Date</label>
+                        <input type="date" id="reminder-date" name="reminder-date" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <div>
+                        <label for="reminder-time" class="block text-sm font-medium text-gray-700">Time</label>
+                        <input type="time" id="reminder-time" name="reminder-time" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <button type="submit" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700">Add Reminder</button>
+                </form>
+            </div>
+
+            <!-- Reminder List -->
+            <div class="mt-12">
+                <h3 class="text-2xl font-bold text-indigo-600 mb-4">Your Reminders</h3>
+                <ul id="reminder-list" class="bg-white shadow-md rounded-2xl p-6">
+                    <li class="text-gray-700">No reminders yet. Add your first reminder!</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full bg-gray-800 text-white py-4">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p>&copy; 2025 CalmX. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const form = document.getElementById('reminder-form');
+        const reminderList = document.getElementById('reminder-list');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('reminder-title').value;
+            const date = document.getElementById('reminder-date').value;
+            const time = document.getElementById('reminder-time').value;
+
+            if (title && date && time) {
+                const listItem = document.createElement('li');
+                listItem.className = 'py-2 px-4 bg-gray-100 rounded-lg mb-2 flex justify-between items-center';
+
+                listItem.innerHTML = `
+                    <div>
+                        <p class="text-indigo-600 font-bold">${title}</p>
+                        <p class="text-sm text-gray-600">${date} at ${time}</p>
+                    </div>
+                    <button class="text-red-500 font-bold hover:underline" onclick="this.parentElement.remove()">Delete</button>
+                `;
+
+                reminderList.appendChild(listItem);
+
+                form.reset();
+            }
+        });
+    </script>
+</body>
+</html>

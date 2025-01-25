@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quizzes & Flashcards | CalmX</title>
+  <style>
+    /* General Styling */
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #e0e7ff, #a5b4fc);
+      color: #333;
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(to right, #6366f1, #4f46e5);
+      color: white;
+      border-bottom-left-radius: 50px;
+      border-bottom-right-radius: 50px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      font-size: 2.8rem;
+      margin: 0;
+    }
+
+    header p {
+      margin: 0.5rem 0 0;
+      font-size: 1.2rem;
+      font-weight: lighter;
+    }
+
+    .container {
+      margin: 2rem auto;
+      max-width: 900px;
+      text-align: center;
+    }
+
+    /* Tabs Styling */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .tabs button {
+      background: #818cf8;
+      border: none;
+      color: white;
+      padding: 0.8rem 2rem;
+      border-radius: 25px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .tabs button.active {
+      background: #4f46e5;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transform: scale(1.1);
+    }
+
+    .tabs button:hover {
+      background: #4f46e5;
+    }
+
+    .tab-content {
+      display: none;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      margin-top: 2rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Quizzes Section */
+    .quiz-list button {
+      background: #c7d2fe;
+      border: none;
+      color: #333;
+      padding: 1rem 1.5rem;
+      border-radius: 15px;
+      margin: 0.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .quiz-list button:hover {
+      background: #818cf8;
+      color: white;
+      transform: translateY(-5px);
+    }
+
+    .question-container {
+      margin-top: 2rem;
+    }
+
+    .question {
+      margin-bottom: 1.5rem;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .answers button {
+      display: block;
+      background: #e0e7ff;
+      border: none;
+      color: #333;
+      padding: 1rem;
+      margin: 0.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .answers button:hover {
+      background: #6366f1;
+      color: white;
+    }
+
+    .result {
+      margin-top: 2rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    /* Flashcards Section */
+    .flashcard {
+      width: 250px;
+      height: 150px;
+      margin: 1rem auto;
+      background: #e0e7ff;
+      border: 2px solid #6366f1;
+      border-radius: 15px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
+      perspective: 1000px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s ease;
+    }
+
+    .flashcard:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .flashcard-inner {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+
+    .flashcard.flip .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-front, .flashcard-back {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .flashcard-front {
+      background: #6366f1;
+      color: white;
+    }
+
+    .flashcard-back {
+      background: #818cf8;
+      color: white;
+      transform: rotateY(180deg);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Quizzes & Flashcards</h1>
+  <p>"Empower your knowledge with fun and focus."</p>
+</header>
+
+<div class="container">
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="quizzes">Quizzes</button>
+    <button class="tab-btn" data-tab="flashcards">Flashcards</button>
+  </div>
+
+  <!-- Quizzes Section -->
+  <div id="quizzes" class="tab-content active">
+    <h2>Select a Quiz</h2>
+    <div class="quiz-list">
+      <button onclick="startQuiz('math')">Math Quiz</button>
+      <button onclick="startQuiz('science')">Science Quiz</button>
+      <button onclick="startQuiz('history')">History Quiz</button>
+    </div>
+    <div id="quiz-container" class="question-container" style="display:none;">
+      <div id="question" class="question"></div>
+      <div id="answers" class="answers"></div>
+      <button id="submit-quiz" style="display:none;" onclick="showResults()">Submit Quiz</button>
+    </div>
+    <div id="result" class="result" style="display:none;"></div>
+  </div>
+
+  <!-- Flashcards Section -->
+  <div id="flashcards" class="tab-content">
+    <h2>Flip the Flashcards</h2>
+    <div class="flashcard" onclick="this.classList.toggle('flip')">
+      <div class="flashcard-inner">
+        <div class="flashcard-front">What is 5 + 5?</div>
+        <div class="flashcard-back">Answer: 10</div>
+      </div>
+    </div>
+    <div class="flashcard" onclick="this.classList.toggle('flip')">
+      <div class="flashcard-inner">
+        <div class="flashcard-front">What is the capital of France?</div>
+        <div class="flashcard-back">Answer: Paris</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+  let currentQuiz = null;
+  let score = 0;
+
+  const quizzes = {
+    math: [
+      { question: "What is 5 + 5?", options: ["10", "12", "15"], correct: "10" },
+      { question: "What is 6 x 7?", options: ["42", "48", "56"], correct: "42" }
+    ],
+    science: [
+      { question: "What is the chemical symbol for water?", options: ["H2O", "O2", "CO2"], correct: "H2O" },
+      { question: "What planet is closest to the sun?", options: ["Mercury", "Venus", "Earth"], correct: "Mercury" }
+    ],
+    history: [
+      { question: "Who was the first president of the USA?", options: ["George Washington", "Thomas Jefferson", "Abraham Lincoln"], correct: "George Washington" },
+      { question: "In which year did World War II end?", options: ["1945", "1939", "1950"], correct: "1945" }
+    ]
+  };
+
+  // Tab switching functionality
+  tabBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      tabContents.forEach((tab) => tab.classList.remove('active'));
+      document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+      resetQuiz();
+    });
+  });
+
+  // Start quiz functionality
+  function startQuiz(subject) {
+    currentQuiz = quizzes[subject];
+    score = 0;
+    document.getElementById('quiz-container').style.display = 'block';
+    document.getElementById('submit-quiz').style.display = 'inline-block';
+    showQuestion(0);
+  }
+
+  function showQuestion(index) {
+    const questionData = currentQuiz[index];
+    document.getElementById('question').innerText = questionData.question;
+    const answersHtml = questionData.options.map(option => 
+      `<button onclick="checkAnswer('${option}', ${index})">${option}</button>`
+    ).join('');
+    document.getElementById('answers').innerHTML = answersHtml;
+  }
+
+  function checkAnswer(answer, index) {
+    const correctAnswer = currentQuiz[index].correct;
+    if (answer === correctAnswer) {
+      score++;
+    }
+    if (index + 1 < currentQuiz.length) {
+      showQuestion(index + 1);
+    } else {
+      showResults();
+    }
+  }
+
+  function showResults() {
+    document.getElementById('quiz-container').style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('result').innerText = `Your score: ${score} out of ${currentQuiz.length}`;
+  }
+
+  function resetQuiz() {
+    document.getElementById('quiz-container').style.display = 'none';
+    document.getElementById('result').style.display = 'none';
+    document.getElementById('submit-quiz').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>

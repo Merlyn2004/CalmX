@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motivation | CalmX</title>
+  <style>
+    /* General Styling */
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #4f46e5, #818cf8);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 800px;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .quote-box {
+      margin: 1.5rem 0;
+      font-size: 1.8rem;
+      font-weight: bold;
+      line-height: 1.6;
+      color: #f9fafb;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .quote-box::before {
+      content: "“";
+      font-size: 3rem;
+      position: relative;
+      top: -10px;
+      color: #a5b4fc;
+    }
+
+    .quote-box::after {
+      content: "”";
+      font-size: 3rem;
+      position: relative;
+      top: 10px;
+      color: #a5b4fc;
+    }
+
+    button {
+      background: #4f46e5;
+      border: none;
+      color: white;
+      padding: 0.8rem 2rem;
+      border-radius: 25px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      margin: 0.5rem;
+    }
+
+    button:hover {
+      background: #6366f1;
+      transform: translateY(-3px);
+    }
+
+    .saved-quotes {
+      margin-top: 2rem;
+      text-align: left;
+      color: #f3f4f6;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 1rem;
+      border-radius: 15px;
+    }
+
+    .go-back {
+      display: inline-block;
+      margin-top: 1.5rem;
+      background: #6366f1;
+      text-decoration: none;
+      color: white;
+      padding: 0.8rem 2rem;
+      border-radius: 25px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .go-back:hover {
+      background: #4f46e5;
+      transform: translateY(-3px);
+    }
+
+    footer {
+      margin-top: 2rem;
+      font-size: 1rem;
+      color: #d1d5db;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Stay Motivated!</h1>
+    <div class="quote-box" id="quote-box">
+      "Believe in yourself and all that you are. Know that there is something inside you that is greater than any obstacle."
+    </div>
+    <button onclick="generateQuote()">Show Another Quote</button>
+    <button onclick="saveQuote()">Save This Quote</button>
+
+    <div class="saved-quotes" id="saved-quotes">
+      <h3>Your Saved Quotes:</h3>
+      <ul id="quote-list"></ul>
+    </div>
+
+    <!-- Go Back Button -->
+    <a href="index.html" class="go-back">Go Back</a>
+
+    <footer>Powered by CalmX</footer>
+  </div>
+
+  <script>
+    // Array of quotes
+    const quotes = [
+      "Your limitation—it’s only your imagination.",
+      "Push yourself, because no one else is going to do it for you.",
+      "Great things never come from comfort zones.",
+      "Dream it. Wish it. Do it.",
+      "Success doesn’t just find you. You have to go out and get it.",
+      "The harder you work for something, the greater you’ll feel when you achieve it.",
+      "Don’t stop when you’re tired. Stop when you’re done.",
+      "Wake up with determination. Go to bed with satisfaction.",
+      "Do something today that your future self will thank you for.",
+      "Little things make big days.",
+    ];
+
+    const quoteBox = document.getElementById('quote-box');
+    const quoteList = document.getElementById('quote-list');
+
+    // Function to display a random quote
+    function generateQuote() {
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+      quoteBox.textContent = quotes[randomIndex];
+    }
+
+    // Function to save a quote
+    function saveQuote() {
+      const currentQuote = quoteBox.textContent;
+      let savedQuotes = JSON.parse(localStorage.getItem('savedQuotes')) || [];
+
+      if (!savedQuotes.includes(currentQuote)) {
+        savedQuotes.push(currentQuote);
+        localStorage.setItem('savedQuotes', JSON.stringify(savedQuotes));
+        displaySavedQuotes();
+      } else {
+        alert("This quote is already saved!");
+      }
+    }
+
+    // Function to display saved quotes
+    function displaySavedQuotes() {
+      const savedQuotes = JSON.parse(localStorage.getItem('savedQuotes')) || [];
+      quoteList.innerHTML = '';
+
+      savedQuotes.forEach((quote) => {
+        const li = document.createElement('li');
+        li.textContent = quote;
+        quoteList.appendChild(li);
+      });
+    }
+
+    // Display saved quotes on page load
+    displaySavedQuotes();
+  </script>
+
+</body>
+</html>
