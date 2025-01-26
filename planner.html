@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pomodoro-based Timetable Generator</title>
+  <title>Custom Timetable Generator</title>
   <style>
     body {
       background-color: #4f46e5;
@@ -56,16 +56,23 @@
       color: white;
     }
     .timetable tr:nth-child(even) {
-      background-color: #1e2a33; /* Darker shade for even rows */
+      background-color: #1e2a33;
     }
     .timetable tr:nth-child(odd) {
-      background-color: #263149; /* Darker shade for odd rows */
+      background-color: #263149;
     }
-    .timetable tr:hover {
-      background-color: #f39c12; /* Highlight on hover */
+    .subject-container {
+      margin-bottom: 15px;
     }
-    .timetable td {
-      word-wrap: break-word;
+    .subject-container input {
+      width: 48%;
+      display: inline-block;
+    }
+    .subject-container button {
+      background-color: #2ecc71;
+    }
+    .subject-container button:hover {
+      background-color: #27ae60;
     }
     .subject-container {
       margin-bottom: 15px;
@@ -83,24 +90,28 @@
   </style>
 </head>
 <body>
-  <h1>Pomodoro-based Timetable Generator</h1>
+  <h1>Pomodoro-based timetable</h1>
   <div class="container">
+    <div>
+      <label for="start-time">Starting Time (e.g., 9:00 AM):</label>
+      <input type="time" id="start-time" required>
+    </div>
     <div id="subjects-container">
       <div class="subject-container">
         <input type="text" class="subject-name" placeholder="Subject name (e.g., Math)">
-        <input type="number" class="subject-time" placeholder="Time in minutes (e.g., 100)">
+        <input type="number" class="subject-time" placeholder="Total time in minutes (e.g., 100)">
         <button onclick="addSubject()">Add Another Subject</button>
       </div>
     </div>
 
     <button onclick="generateTimetable()">Generate Timetable</button>
 
-    <!-- Table hidden by default; will display after timetable generation -->
+    <!-- Table hidden by default -->
     <table class="timetable" id="timetable" style="display:none;">
       <thead>
         <tr>
           <th>Time</th>
-          <th>Subject</th>
+          <th>Activity</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -120,7 +131,7 @@
       const timeInput = document.createElement("input");
       timeInput.type = "number";
       timeInput.classList.add("subject-time");
-      timeInput.placeholder = "Time in minutes (e.g., 100)";
+      timeInput.placeholder = "Total time in minutes (e.g., 100)";
 
       const removeButton = document.createElement("button");
       removeButton.textContent = "Remove";
@@ -134,73 +145,74 @@
     }
 
     function generateTimetable() {
+      const startTimeInput = document.getElementById("start-time").value;
+      if (!startTimeInput) {
+        alert("Please enter a starting time!");
+        return;
+      }
+
+      const [startHour, startMinute] = startTimeInput.split(":").map(Number);
+      let currentTime = startHour * 60 + startMinute; // Convert starting time to minutes
+
       const subjectElements = document.querySelectorAll(".subject-container");
       const timetableBody = document.getElementById("timetable").getElementsByTagName("tbody")[0];
       timetableBody.innerHTML = ""; // Clear previous timetable
 
-      const pomodoroDuration = 25; // Pomodoro session duration in minutes
-      const breakDuration = 5; // Break duration after each Pomodoro session in minutes
-      const longBreakDuration = 15; // Long break after every 4 Pomodoros
-      let currentTime = 9 * 60; // Start time at 9:00 AM in minutes (9 * 60 = 540 minutes)
+      const pomodoroDuration = 25; // 25 minutes of study
+      const shortBreak = 5; // 5 minutes break after each Pomodoro
+      const subjectGap = 15; // 15-minute gap between subjects
 
       subjectElements.forEach(subjectElement => {
         const subjectName = subjectElement.querySelector(".subject-name").value.trim();
         const totalStudyTime = parseInt(subjectElement.querySelector(".subject-time").value.trim());
 
-        if (!subjectName || !totalStudyTime) {
+        if (!subjectName || isNaN(totalStudyTime)) {
           alert("Please enter both subject name and time for each subject.");
           return;
         }
 
-        let totalPomodoros = Math.ceil(totalStudyTime / pomodoroDuration); // Calculate Pomodoros needed
-        let timeSlots = [];
-        let studyTime = 0;
-        let breakTime = 0;
-        let pomodoroCount = 0;
+        let remainingTime = totalStudyTime;
 
-        // Calculate the total study time and break time for the subject
-        for (let i = 0; i < totalPomodoros; i++) {
-          let startTime = currentTime;
-          let endTime = startTime + pomodoroDuration;
-          timeSlots.push(`${formatTime(startTime)} to ${formatTime(endTime)}`); // Record the Pomodoro session
-          studyTime += pomodoroDuration;
-          currentTime = endTime; // Update the current time to the end of the Pomodoro
+        // Generate schedule for the subject
+        while (remainingTime > 0) {
+          const studyTime = Math.min(remainingTime, pomodoroDuration);
+          const startTime = currentTime;
+          const endTime = currentTime + studyTime;
 
-          if (++pomodoroCount % 4 === 0) {
-            // After every 4 Pomodoro sessions, give a 15-minute long break
-            startTime = currentTime;
-            endTime = startTime + longBreakDuration;
-            timeSlots.push(`${formatTime(startTime)} to ${formatTime(endTime)} (Long Break)`); // Record the long break
-            breakTime += longBreakDuration;
-            currentTime = endTime; // Update the current time to the end of the long break
-          } else {
-            // After each Pomodoro (except after 4 Pomodoros), give a 5-minute break
-            startTime = currentTime;
-            endTime = startTime + breakDuration;
-            timeSlots.push(`${formatTime(startTime)} to ${formatTime(endTime)} (Break)`); // Record the break time
-            breakTime += breakDuration;
-            currentTime = endTime; // Update the current time to the end of the break
+          // Add study session
+          addRow(timetableBody, `${formatTime(startTime)} to ${formatTime(endTime)}`, `${subjectName} Study`);
+          currentTime = endTime;
+          remainingTime -= studyTime;
+
+          if (remainingTime > 0) {
+            // Add 5-minute break
+            const breakStart = currentTime;
+            const breakEnd = currentTime + shortBreak;
+            addRow(timetableBody, `${formatTime(breakStart)} to ${formatTime(breakEnd)}`, "Break");
+            currentTime = breakEnd;
           }
         }
 
-        const totalTimeWithBreaks = studyTime + breakTime;
-
-        // Create a new row for the subject
-        timeSlots.forEach(slot => {
-          const row = timetableBody.insertRow();
-          const timeCell = row.insertCell(0);
-          const subjectCell = row.insertCell(1);
-
-          timeCell.textContent = slot;
-          subjectCell.textContent = subjectName;
-        });
+        // Add 15-minute gap after the subject
+        const gapStart = currentTime;
+        const gapEnd = currentTime + subjectGap;
+        addRow(timetableBody, `${formatTime(gapStart)} to ${formatTime(gapEnd)}`, "Gap Between Subjects");
+        currentTime = gapEnd;
       });
 
-      // Display the timetable after generating it
+      // Display the timetable
       document.getElementById("timetable").style.display = "table";
     }
 
-    // Format time from minutes into HH:MM format
+    function addRow(tableBody, time, activity) {
+      const row = tableBody.insertRow();
+      const timeCell = row.insertCell(0);
+      const activityCell = row.insertCell(1);
+
+      timeCell.textContent = time;
+      activityCell.textContent = activity;
+    }
+
     function formatTime(minutes) {
       const hours = Math.floor(minutes / 60);
       const mins = minutes % 60;
