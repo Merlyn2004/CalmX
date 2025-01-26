@@ -60,8 +60,9 @@
             <!-- Reminder List -->
             <div class="mt-12">
                 <h3 class="text-2xl font-bold text-indigo-600 mb-4">Your Reminders</h3>
+                <p id="notification" class="text-center text-gray-500 mb-4">No reminders yet. Add your first reminder!</p>
                 <ul id="reminder-list" class="bg-white shadow-md rounded-2xl p-6">
-                    <li class="text-gray-700">No reminders yet. Add your first reminder!</li>
+                    <!-- Reminder items will appear here -->
                 </ul>
             </div>
         </section>
@@ -77,6 +78,7 @@
     <script>
         const form = document.getElementById('reminder-form');
         const reminderList = document.getElementById('reminder-list');
+        const notification = document.getElementById('notification');
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -86,6 +88,11 @@
             const time = document.getElementById('reminder-time').value;
 
             if (title && date && time) {
+                // Remove the "No reminders yet" message if it exists
+                if (reminderList.children.length === 0 && notification.textContent === 'No reminders yet. Add your first reminder!') {
+                    notification.textContent = 'Reminder added successfully!';
+                }
+
                 const listItem = document.createElement('li');
                 listItem.className = 'py-2 px-4 bg-gray-100 rounded-lg mb-2 flex justify-between items-center';
 
